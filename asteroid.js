@@ -21,6 +21,7 @@ class Asteroid extends GameObject {
     }
 
     update() {
+        //console.log("Wywoluje funkcje update asteroidy!");
         this.x+=this.dx;
         this.y+=this.dy;
         setTimeout(this.update.bind(this),this.timeout);
