@@ -9,7 +9,7 @@ class Game {
         this.uiobjects = [];
         this.playerobject = new Ufo(200, 200, 0, 0, 5, 120);
         this.scene = new Scene("res/background.jpg", 0, 0, 0, 0, 100, 800, 400);
-        this.asteroids_generator = new AsteroidGenerator(50, 2000, -10, this.game_canvas.height, this.game_canvas.width);
+        this.asteroids_generator = new AsteroidGenerator(500, 1000, 33, -10, this.game_canvas.height, this.game_canvas.width);
         console.log("Generator: ", this.asteroids_generator);
         this.vjoy = new VJoy(50, 50, 50, this.ui_canvas, "green");
         this.gameobjects = [];
@@ -86,7 +86,7 @@ class Game {
     }
     prepare_asteroids() { // inicjalizacja N asteroid
         console.log("Asteroidy zainicjowane");
-        console.log("Interal wywolywania asteroidy: ", this.asteroids_generator.interval);
+        console.log("Interal wywolywania asteroidy: ", this.asteroids_generator.generation_interval);
         this.asteroids_generator.add_asteroids();
     }
     initialize_game() {        
@@ -94,7 +94,7 @@ class Game {
     }
     initialize_asteroids() {
         this.prepare_asteroids();
-        setInterval(this.fire_asteroid.bind(this), this.asteroids_generator.interval);
+        setInterval(this.fire_asteroid.bind(this), this.asteroids_generator.generation_interval);
     }
     animation() {
         this.game_ctx.clearRect(0, 0, this.game_canvas.width, this.game_canvas.height);
@@ -132,7 +132,6 @@ class Game {
         this.playerobject.update();
     }
 }
-
 
 window.onload = function() {
     var game = new Game();

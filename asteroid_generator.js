@@ -1,7 +1,8 @@
 class AsteroidGenerator {
-    constructor(number, interval, dx, canvas_height, canvas_width) {
+    constructor(number, generation_interval, update_interval, dx, canvas_height, canvas_width) {
         this.number = number;
-        this.interval = interval;
+        this.generation_interval = generation_interval;
+        this.update_interval = update_interval;
         this.dx = dx;
         this.canvas_height = canvas_height;
         this.canvas_width = canvas_width;
@@ -11,14 +12,14 @@ class AsteroidGenerator {
     create_asteroid() {
             console.log("Tworze nowa asteroide!");
             var sector = this.roll_sector();
-            var x = this.canvas_width - 100;
+            var x = this.calculate_x(sector);
             var y = this.calculate_y(sector);
-            var dx = this.dx;
+            var dx = this.calculate_dx(sector);;
             var dy = this.calculate_dy(sector);
-            var radius = (Math.random() * 35) + 20;
+            var radius = (Math.random() * 25) + 10;
             var segments = (Math.random() * 8) + 6;
             var noise = (Math.random() * 0.5);
-            var interval = 100;
+            var interval = this.update_interval;
             var asteroid = new Asteroid(x, y, dx, dy, radius, segments, noise, interval);
             this.asteroids.push(asteroid);
             console.log(this.asteroids[0].x);
@@ -32,25 +33,57 @@ class AsteroidGenerator {
             }
     }
     
-    roll_sector() { // funkcja generuje jeden z wybranych sektorow miedzy 1 a 3
-        return parseInt((Math.random() * 3) + 1);
+    roll_sector() { // funkcja generuje jeden z wybranych sektorow miedzy 1 a 8
+        return parseInt((Math.random() * 8) + 1);
     }
     
     calculate_y(sector) { // wylicza wartosc y nowo wygenerowanej asteroidy na podstawie sektora
-        var random = Math.random();
-        var sector_height = this.canvas_height / 3;
-        return (random * sector_height) * sector;
+        if(sector == 1 || sector == 2 || sector == 3) {
+            return 0;
+        }
+        else if(sector == 6 || sector == 7 || sector == 8) {
+            return this.canvas_height;
+        }
+        else if(sector == 4 || sector == 5) {
+            var sector_height = this.canvas_height / 3;
+            return ((Math.random() * sector_height) + sector_height);
+        }
+    }
+
+    calculate_x(sector) {
+        var sector_width = this.canvas_width / 3;
+        if(sector == 1 || sector == 4 || sector == 6) {
+            return 0;
+        }
+        else if(sector == 3 || sector == 5 || sector == 8) {
+            return this.canvas_width;
+        }
+        else if(sector == 2 || sector == 7) {
+            return ((Math.random() * sector_width) + sector_width)
+        }
     }
     
     calculate_dy(sector) { // zaleznie od tego w ktorym sektorze znajduje sie asteroida wartoc jej dy powinna byc rozna
-        if(sector == 1) {
-            return (Math.random() * 0.2) - 0.5;
+        if(sector == 1 || sector == 2 || sector == 3) {
+            return 1;
+            }
+        else if (sector == 4 || sector == 5) {
+            return 0;
+            }
+        else if (sector == 6 || sector == 7 || sector == 8) {
+          return -1;
         }
-        else if (sector == 2) {
-            return (Math.random() * 0.2) - 0.1
-        }
-        else {
-            return (Math.random() * 0.2) + 0.5;
+    }
+
+    calculate_dx(sector) { // zaleznie od tego w ktorym sektorze znajduje sie asteroida wartoc jej dy powinna byc rozna
+        if(sector == 1 || sector == 4 || sector == 6) {
+            return 1;
+            }
+        else if (sector == 2 || sector == 7) {
+            return 0;
+            }
+        else if (sector == 3 || sector == 5 || sector == 8) {
+          return -1;
         }
     }
 
