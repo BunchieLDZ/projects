@@ -1,15 +1,17 @@
 class Game {
     constructor() {
-        this.canvas = document.getElementById("myCanvas");
-        this.ctx = this.canvas.getContext("2d");
+        this.game_canvas = document.getElementById("myCanvas");
+        this.ui_canvas = document.getElementById("uiCanvas");
+        this.game_ctx = this.game_canvas.getContext("2d");
+        this.ui_ctx = this.ui_canvas.getContext("2d");
         //this.canvas.focus();
         this.victory = false;
         this.uiobjects = [];
         this.playerobject = new Ufo(200, 200, 0, 0, 5, 120);
         this.scene = new Scene("res/background.jpg", 0, 0, 0, 0, 100, 800, 400);
-        this.asteroids_generator = new AsteroidGenerator(50, 2000, -10, this.canvas.height, this.canvas.width);
+        this.asteroids_generator = new AsteroidGenerator(50, 2000, -10, this.game_canvas.height, this.game_canvas.width);
         console.log("Generator: ", this.asteroids_generator);
-        this.vjoy = new VJoy(100, 450, 50, this.canvas);
+        this.vjoy = new VJoy(50, 50, 50, this.ui_canvas, "green");
         this.gameobjects = [];
         this.ongoingTouches = [];
         window.requestAnimationFrame(this.animation.bind(this));
@@ -55,10 +57,10 @@ class Game {
     }
     initialize_touch() {
         //this.canvas.addEventListener("touchstart", this.vjoy.start.bind(this), false);
-        this.canvas.addEventListener("touchend", this.start_touch.bind(this), false);
-        this.canvas.addEventListener("touchend", this.end_touch, false);
-        this.canvas.addEventListener("touchcancel", this.cancel_touch, false);
-        this.canvas.addEventListener("touchmove", this.move_touch, false);
+        this.ui_canvas.addEventListener("touchend", this.start_touch.bind(this), false);
+        this.ui_canvas.addEventListener("touchend", this.end_touch, false);
+        this.ui_canvas.addEventListener("touchcancel", this.cancel_touch, false);
+        this.ui_canvas.addEventListener("touchmove", this.move_touch, false);
     }
     calculate_number_of_objects(gameobjects) {
         return gameobjects.length;
@@ -69,10 +71,10 @@ class Game {
     }
     victory() {
         console.log("Zwyciestwo!");
-        this.ctx.font = "30px Comic Sans MS";
-        this.ctx.fillStyle = "red";
-        this.ctx.textAlign = "center";
-        this.ctx.fillText("Przetrwales!", this.canvas.width/2, this.canvas.height/2);
+        this.game_ctx.font = "30px Comic Sans MS";
+        this.game_ctx.fillStyle = "red";
+        this.game_ctx.textAlign = "center";
+        this.game_ctx.fillText("Przetrwales!", this.game_canvas.width/2, this.game_canvas.height/2);
     }
     evaluate_victory() {
         console.log("Sprawdzam warunek zwyciestwa");
@@ -95,26 +97,26 @@ class Game {
         setInterval(this.fire_asteroid.bind(this), this.asteroids_generator.interval);
     }
     animation() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.scene.draw(this.ctx);
+        this.game_ctx.clearRect(0, 0, this.game_canvas.width, this.game_canvas.height);
+        this.scene.draw(this.game_ctx);
         for(var i = 0; i < this.calculate_number_of_objects(this.gameobjects); i++) {
-            this.gameobjects[i].draw(this.ctx);
+            this.gameobjects[i].draw(this.game_ctx);
             //console.log(gameobjects[i].width);
         }
         for(var i = 0; i < this.calculate_number_of_objects(this.uiobjects); i++) {
-            this.uiobjects[i].draw(this.ctx);
+            this.uiobjects[i].draw(this.ui_ctx);
         }
     
         for(var i = 0; i < this.asteroids_generator.calculate_number_of_asteroids(); i++) {
             if(this.asteroids_generator.asteroids[i].exists == true){
-                this.asteroids_generator.asteroids[i].draw(this.ctx);
+                this.asteroids_generator.asteroids[i].draw(this.game_ctx);
             }
             if(this.asteroids_generator.asteroids[i].x < 0) {
                 this.asteroids_generator.asteroids[i].exists = false;
                 this.asteroids_generator.asteroids.splice(i, 1);
             }
         }
-        this.playerobject.draw(this.ctx);
+        this.playerobject.draw(this.game_ctx);
         //game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
         window.requestAnimationFrame(this.animation.bind(this));
     }

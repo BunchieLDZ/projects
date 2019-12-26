@@ -1,5 +1,5 @@
 class VJoy {
-    constructor(x, y, radius, canvas) {
+    constructor(x, y, radius, canvas, color) {
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -9,9 +9,10 @@ class VJoy {
         this.move = false;
         this.currentTouches = [];
         this.canvas = canvas;
+        this.color = color;
     }
     draw(context) {
-        context.strokeStyle = "green";
+        context.strokeStyle = this.color;
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         context.stroke();
