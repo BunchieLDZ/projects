@@ -1,8 +1,9 @@
 class AsteroidGenerator {
-    constructor(number, interval, dx, canvas_width) {
+    constructor(number, interval, dx, canvas_height, canvas_width) {
         this.number = number;
         this.interval = interval;
         this.dx = dx;
+        this.canvas_height = canvas_height;
         this.canvas_width = canvas_width;
         this.asteroids = [];
     }
@@ -37,7 +38,7 @@ class AsteroidGenerator {
     
     calculate_y(sector) { // wylicza wartosc y nowo wygenerowanej asteroidy na podstawie sektora
         var random = Math.random();
-        var sector_height = game.canvas.height / 3;
+        var sector_height = this.canvas_height / 3;
         return (random * sector_height) * sector;
     }
     

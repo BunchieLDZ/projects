@@ -1,5 +1,5 @@
 class VJoy {
-    constructor(x, y, radius) {
+    constructor(x, y, radius, canvas) {
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -8,6 +8,7 @@ class VJoy {
         this.cancel = false;
         this.move = false;
         this.currentTouches = [];
+        this.canvas = canvas;
     }
     draw(context) {
         context.strokeStyle = "green";
@@ -34,11 +35,12 @@ class VJoy {
     end() {
 
     }
-    initialize(canvas) {
-        canvas.addEventListener("touchstart", this.start(), false);
-        canvas.addEventListener("touchend", this.end(), false);
-        canvas.addEventListener("touchcancel", this.cancel(), false);
-        canvas.addEventListener("touchmove", this.move(), false);
+    initialize() {
+        console.log(this.canvas);   
+        this.canvas.addEventListener("touchstart", this.start(), false);
+        this.canvas.addEventListener("touchend", this.end(), false);
+        this.canvas.addEventListener("touchcancel", this.cancel(), false);
+        this.canvas.addEventListener("touchmove", this.move(), false);
     }
     isTouchInCircle(mx,my,shape_x, shape_y, shape_radius) {
         if(shape_radius){

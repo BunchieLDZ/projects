@@ -1,8 +1,9 @@
 class Ufo extends GameObject {
-    constructor(x, y, dx, dy, timeout) {
+    constructor(x, y, dx, dy, health, timeout) {
         super(x, y, dx, dy, timeout);
         this.radiusX = 20;
         this.radiusY = 75;
+        this.health = health;
     }
     draw(ctx) {
         ctx.save();
@@ -23,5 +24,11 @@ class Ufo extends GameObject {
         this.x+=this.dx;
         this.y+=this.dy;
         setTimeout(this.update.bind(this),this.timeout);
+    }
+    set_dx(number) {
+        this.dx = number;
+    }
+    set_dy(number) {
+        this.dy = number;
     }
 }

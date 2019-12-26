@@ -21,4 +21,10 @@ class GameObject {
     box_collision() {
         
     }   
+    set_dx(number) {
+        this.dx = number;
+    }
+    set_dy(number) {
+        this.dy = number;
+    }
 }

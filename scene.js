@@ -3,6 +3,7 @@ class Scene extends GameObject {
     super(x, y, dx, dy, timeout)
     this.img = new Image();
     this.img.src = img;
+    console.log("Obrazek sceny: ", this.img.src);
     this.canvas_width = canvas_width;
     this.canvas_height = canvas_height;
     this.dx = -3;
@@ -12,7 +13,6 @@ class Scene extends GameObject {
         ctx.drawImage(this.img, this.x+this.canvas_width, 0, this.canvas_width, this.canvas_height);
     }
     update() {
-        console.log(this.timeout);
         if(this.x < -this.canvas_width) {
             this.x = 0;
         }
