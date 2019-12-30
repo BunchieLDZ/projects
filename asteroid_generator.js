@@ -22,7 +22,7 @@ class AsteroidGenerator {
             var segments = ((Math.random() * 4) + 6) * 2;
             var noise = (Math.random() * 0.5);
             var interval = this.update_interval;
-            var asteroid = new Asteroid(x, y, dx, dy, radius, speed, segments, noise, interval);
+            var asteroid = new Asteroid(x, y, dx, dy, radius, speed, segments, noise, "res/asteroid.jpg", interval);
             this.asteroids.push(asteroid);
             console.log(this.asteroids[0].x);
             console.log(this.asteroids[0].timeout);           

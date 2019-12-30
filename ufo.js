@@ -20,7 +20,7 @@ class Ufo extends GameObject {
         ctx.beginPath();
         ctx.ellipse(this.x, this.y-20, this.radiusX + 20, this.radiusY - 35, Math.PI, 0, Math.PI);
         ctx.stroke(); */
-        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        ctx.drawImage(this.image, this.x - this.width /2 , this.y - this.height / 2 , this.width, this.height);
         ctx.restore();
     }
     shields_up() {

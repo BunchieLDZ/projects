@@ -1,6 +1,8 @@
 class Asteroid extends GameObject {
-    constructor(x, y, dx, dy, radius, speed, segments, noise, timeout) {
+    constructor(x, y, dx, dy, radius, speed, segments, noise, pattern, timeout) {
         super(x, y, dx, dy, timeout);
+        this.image = new Image();
+        this.image.src = pattern;
         this.radius = radius;
         this.noise = noise;
         this.segments = segments;  
@@ -8,15 +10,18 @@ class Asteroid extends GameObject {
         this.exists = false;
     }
     draw(ctx) {
+    var pattern = ctx.createPattern(this.image, "repeat");
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.beginPath();
     ctx.strokeStyle = "white";
+    ctx.fillStyle = pattern;
     for(let i = 0; i < this.segments; i++) {
     ctx.rotate(2 * Math.PI / this.segments);
     ctx.lineTo(this.radius + this.radius * this.noise * (Math.random() - 0.5), 0);
     }
     ctx.closePath();
+    ctx.fill();
     ctx.stroke();
     ctx.restore();
     }
