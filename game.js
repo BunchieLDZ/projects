@@ -7,9 +7,9 @@ class Game {
         //this.canvas.focus();
         this.victory = false;
         this.uiobjects = [];
-        this.playerobject = new Ufo(200, 200, 0, 0, 5, 120);
+        this.playerobject = new Ufo(this.game_canvas.width / 2, this.game_canvas.height / 2, 0, 0, 5, 120);
         this.scene = new Scene("res/background.jpg", 0, 0, 0, 0, 100, 800, 400);
-        this.asteroids_generator = new AsteroidGenerator(500, 1000, 33, -10, this.game_canvas.height, this.game_canvas.width);
+        this.asteroids_generator = new AsteroidGenerator(500, 1200, 33, -10, this.game_canvas.height, this.game_canvas.width);
         console.log("Generator: ", this.asteroids_generator);
         this.vjoy = new VJoy(50, 50, 50, this.ui_canvas, "green");
         this.gameobjects = [];
@@ -18,7 +18,7 @@ class Game {
     }
 
     start() {
-        this.initialize_UI();
+        this.initialize_UI();   
         this.initialize_asteroids() 
         this.initialize_game();
         //this.animation();
@@ -79,7 +79,7 @@ class Game {
     evaluate_victory() {
         console.log("Sprawdzam warunek zwyciestwa");
         console.log("Liczba asteroid: ", this.asteroids_generator.calculate_number_of_asteroids())
-        if((this.asteroids_generator.calculate_number_of_asteroids()) == 0)
+        if((this.asteroids_generator.calculate_number_of_asteroids()) == this.asteroids_generator.asteroids_released)
         {
             this.victory();
         }
@@ -113,7 +113,7 @@ class Game {
             }
             if(this.asteroids_generator.asteroids[i].x < 0) {
                 this.asteroids_generator.asteroids[i].exists = false;
-                this.asteroids_generator.asteroids.splice(i, 1);
+                //this.asteroids_generator.asteroids.splice(i, 1);
             }
         }
         this.playerobject.draw(this.game_ctx);

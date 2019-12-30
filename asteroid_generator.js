@@ -6,6 +6,7 @@ class AsteroidGenerator {
         this.dx = dx;
         this.canvas_height = canvas_height;
         this.canvas_width = canvas_width;
+        this.asteroids_released = 0;
         this.asteroids = [];
     }
     
@@ -14,13 +15,14 @@ class AsteroidGenerator {
             var sector = this.roll_sector();
             var x = this.calculate_x(sector);
             var y = this.calculate_y(sector);
-            var dx = this.calculate_dx(sector);;
+            var dx = this.calculate_dx(sector);
             var dy = this.calculate_dy(sector);
             var radius = (Math.random() * 25) + 10;
-            var segments = (Math.random() * 8) + 6;
+            var speed = Math.random() * 1 + 1;
+            var segments = ((Math.random() * 4) + 6) * 2;
             var noise = (Math.random() * 0.5);
             var interval = this.update_interval;
-            var asteroid = new Asteroid(x, y, dx, dy, radius, segments, noise, interval);
+            var asteroid = new Asteroid(x, y, dx, dy, radius, speed, segments, noise, interval);
             this.asteroids.push(asteroid);
             console.log(this.asteroids[0].x);
             console.log(this.asteroids[0].timeout);           
@@ -75,7 +77,7 @@ class AsteroidGenerator {
         }
     }
 
-    calculate_dx(sector) { // zaleznie od tego w ktorym sektorze znajduje sie asteroida wartoc jej dy powinna byc rozna
+    calculate_dx(sector) { // zaleznie od tego w ktorym sektorze znajduje sie asteroida wartoc jej dx powinna byc rozna
         if(sector == 1 || sector == 4 || sector == 6) {
             return 1;
             }
@@ -100,5 +102,6 @@ class AsteroidGenerator {
         console.log("DY asteroidy: ", this.asteroids[rand].dy);
         this.asteroids[rand].update();
         //this.asteroids.splice(rand, 1);
+        this.asteroids_released++;
     }
 }

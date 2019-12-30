@@ -1,9 +1,10 @@
 class Asteroid extends GameObject {
-    constructor(x, y, dx, dy, radius, segments, noise, timeout) {
+    constructor(x, y, dx, dy, radius, speed, segments, noise, timeout) {
         super(x, y, dx, dy, timeout);
         this.radius = radius;
         this.noise = noise;
         this.segments = segments;  
+        this.speed = speed;
         this.exists = false;
     }
     draw(ctx) {
@@ -22,8 +23,8 @@ class Asteroid extends GameObject {
 
     update() {
         //console.log("Wywoluje funkcje update asteroidy!");
-        this.x+=this.dx;
-        this.y+=this.dy;
+        this.x+=this.dx * this.speed;
+        this.y+=this.dy * this.speed;
         setTimeout(this.update.bind(this),this.timeout);
     }
 }

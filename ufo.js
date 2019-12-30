@@ -17,7 +17,7 @@ class Ufo extends GameObject {
         ctx.stroke();
         ctx.restore();
     }
-    shoot() {
+    shields_up() {
 
     }
     update() {
@@ -30,5 +30,8 @@ class Ufo extends GameObject {
     }
     set_dy(number) {
         this.dy = number;
+    }
+    collision_with_borders() {
+
     }
 }
