@@ -1,20 +1,26 @@
 class Ufo extends GameObject {
-    constructor(x, y, dx, dy, health, timeout) {
+    constructor(x, y, dx, dy, width, height, health, image, timeout) {
         super(x, y, dx, dy, timeout);
         this.radiusX = 20;
         this.radiusY = 75;
         this.health = health;
+        this.width = width;
+        this.height = height;
+        this.image = new Image(this.width, this.height);   
+        this.image.src = image;
+
     }
     draw(ctx) {
         ctx.save();
-        ctx.strokeStyle = "white";
+      /*   ctx.strokeStyle = "white";
         ctx.beginPath();
         ctx.ellipse(this.x, this.y, this.radiusX, this.radiusY, Math.PI / 2, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.closePath();
         ctx.beginPath();
         ctx.ellipse(this.x, this.y-20, this.radiusX + 20, this.radiusY - 35, Math.PI, 0, Math.PI);
-        ctx.stroke();
+        ctx.stroke(); */
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
         ctx.restore();
     }
     shields_up() {

@@ -7,7 +7,7 @@ class Game {
         //this.canvas.focus();
         this.victory = false;
         this.uiobjects = [];
-        this.playerobject = new Ufo(this.game_canvas.width / 2, this.game_canvas.height / 2, 0, 0, 5, 120);
+        this.playerobject = new Ufo(this.game_canvas.width / 2, this.game_canvas.height / 2, 0, 0, 128, 64, 100, "res/ufo.png", 120);
         this.scene = new Scene("res/background.jpg", 0, 0, 0, 0, 100, 800, 400);
         this.asteroids_generator = new AsteroidGenerator(500, 1200, 33, -10, this.game_canvas.height, this.game_canvas.width);
         console.log("Generator: ", this.asteroids_generator);
