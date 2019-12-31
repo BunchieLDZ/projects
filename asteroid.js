@@ -7,6 +7,8 @@ class Asteroid extends GameObject {
         this.noise = noise;
         this.segments = segments;  
         this.speed = speed;
+        this.height = this.radius / 2;
+        this.width = this.radius / 2;
         this.exists = false;
     }
     draw(ctx) {

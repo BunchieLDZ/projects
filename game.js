@@ -50,8 +50,8 @@ class Game {
                 console.log(distance);
                 this.playerobject.set_dx(coord_diffx);
                 this.playerobject.set_dy(coord_diffy);
-                console.log(coord_diffx * this.vjoy.speed);
-                console.log(coord_diffy * this.vjoy.speed);
+                console.log("Roznica koordynatynat: ", coord_diffx, coord_diffy);
+                console.log("Dx i Dy gracza:", this.playerobject.dx, this.playerobject.dy);
             }
         }
     }
@@ -96,7 +96,37 @@ class Game {
         this.prepare_asteroids();
         setInterval(this.fire_asteroid.bind(this), this.asteroids_generator.generation_interval);
     }
+    distance_between(obj1, obj2) {
+        return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) +Math.pow(obj1.y - obj2.y, 2));
+    }
+    box_collision(object1, object2) {
+        if (object1.x < object2.x + object2.width  && object1.x + object1.width  > object2.x &&
+            object1.y < object2.y + object2.height && object1.y + object1.height > object2.y) {
+             /*  object1.dx = -object1.dx;
+                object1.dy = -object1.dy;
+                object2.dx = -object2.dx;
+                object2.dy = -object2.dy; */
+            }
+    }   
+    check_collisions() {
+      /*  console.log("Liczba obiektow: ", this.asteroids_generator.asteroids.length);
+        for(var i = 0; i < this.asteroids_generator.asteroids.length; i++) {
+            for(var j = this.asteroids_generator.asteroids.length; j > 0; j--) {
+                if(this.asteroids_generator.asteroids[i].exists && this.asteroids_generator.asteroids[j].exists) {
+                if(this.calculate_distance(this.asteroids_generator.asteroids[i].x , this.asteroids_generator.asteroids[j].x, this.asteroids_generator.asteroids[i].y, this.asteroids_generator.asteroids[j].y) <= 10) {
+                    console.log("KOLIZJA!");
+                    this.asteroids_generator.asteroids[i].dx = -this.asteroids_generator.asteroids[i].dx;
+                    this.asteroids_generator.asteroids[i].dy = -this.asteroids_generator.asteroids[i].dy;
+                    this.asteroids_generator.asteroids[j].dx = -this.asteroids_generator.asteroids[j].dx;
+                    this.asteroids_generator.asteroids[j].dy = -this.asteroids_generator.asteroids[j].dy;
+                    }
+                }
+            }
+        }
+    } */
+}
     animation() {
+        this.check_collisions();
         this.game_ctx.clearRect(0, 0, this.game_canvas.width, this.game_canvas.height);
         this.scene.draw(this.game_ctx);
         for(var i = 0; i < this.calculate_number_of_objects(this.gameobjects); i++) {
@@ -110,6 +140,7 @@ class Game {
         for(var i = 0; i < this.asteroids_generator.calculate_number_of_asteroids(); i++) {
             if(this.asteroids_generator.asteroids[i].exists == true){
                 this.asteroids_generator.asteroids[i].draw(this.game_ctx);
+                this.box_collision(this.asteroids_generator.asteroids[i], this.playerobject);
             }
             if(this.asteroids_generator.asteroids[i].x < 0) {
                 this.asteroids_generator.asteroids[i].exists = false;
