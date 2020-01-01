@@ -7,7 +7,7 @@ class Game {
         //this.canvas.focus();
         this.victory = false;
         this.uiobjects = [];
-        this.playerobject = new Ufo(this.game_canvas.width / 2, this.game_canvas.height / 2, 0, 0, 128, 64, 100, "res/ufo.png", 120);
+        this.playerobject = new Player(this.game_canvas.width / 2, this.game_canvas.height / 2, 0, 0, 128, 64, "res/ufo.png", 120);
         this.scene = new Scene("res/background.jpg", 0, 0, 0, 0, 100, 800, 400);
         this.asteroids_generator = new AsteroidGenerator(500, 1200, 33, -10, this.game_canvas.height, this.game_canvas.width);
         console.log("Generator: ", this.asteroids_generator);
@@ -100,14 +100,48 @@ class Game {
         return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) +Math.pow(obj1.y - obj2.y, 2));
     }
     box_collision(object1, object2) {
-        if (object1.x < object2.x + object2.width  && object1.x + object1.width  > object2.x &&
-            object1.y < object2.y + object2.height && object1.y + object1.height > object2.y) {
-             /*  object1.dx = -object1.dx;
-                object1.dy = -object1.dy;
-                object2.dx = -object2.dx;
-                object2.dy = -object2.dy; */
+        if (object1.x < object2.x + object2.width &&
+            object1.x + object1.width > object2.x &&
+            object1.y < object2.y + object2.height &&
+            object1.y + object1.height > object2.y) {
+            console.log("Pozycja asteroidy: ", object1.x, object1.y, "Pozycja gracza: ", object2.x, object2.y);
+            console.log("Szerokosc i wysokosc statku: ", object2.width, object2.height);
+            console.log("Szerokosc i wysokosc asteroidy: ", object1.width, object1.height)
+             this.on_player_hit();
             }
-    }   
+    }  
+    circle_collision(object1, object2) {
+        var dx = object1.x - object2.x;
+        var dy = object1.y - object2.y;
+        var distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < object1.radius + object2.radius) {
+        this.on_player_hit();
+        }
+    }
+    intersect_collision(circle, rect) {
+    var circleDistancex = Math.abs(circle.x - rect.x);
+    var circleDistancey = Math.abs(circle.y - rect.y);
+
+    if (circleDistancex > (rect.width/2 + circle.radius)) { return false; }
+    if (circleDistancey > (rect.height/2 + circle.radius)) { return false; }
+
+    if (circleDistancex <= (rect.width/2)) { this.on_player_hit(); } 
+    if (circleDistancey <= (rect.height/2)) { this.on_player_hit();; }
+
+    var cornerDistance_sq = (circleDistancex - rect.width/2)^2 +
+                         (circleDistancey - rect.height/2)^2;
+
+    if((cornerDistance_sq <= (circle.r^2))) {
+        this.on_player_hit();
+        }
+    }
+    on_player_hit() {
+        this.game_ctx.font = "30px Arial";
+        this.game_ctx.fillStyle = "white";
+        this.game_ctx.fillText("You lose!", (this.game_canvas.width / 2) - 30, this.game_canvas.height / 2);  
+        console.log("PRZEGRANA");  
+    }
     check_collisions() {
       /*  console.log("Liczba obiektow: ", this.asteroids_generator.asteroids.length);
         for(var i = 0; i < this.asteroids_generator.asteroids.length; i++) {
@@ -140,7 +174,8 @@ class Game {
         for(var i = 0; i < this.asteroids_generator.calculate_number_of_asteroids(); i++) {
             if(this.asteroids_generator.asteroids[i].exists == true){
                 this.asteroids_generator.asteroids[i].draw(this.game_ctx);
-                this.box_collision(this.asteroids_generator.asteroids[i], this.playerobject);
+                //this.box_collision(this.asteroids_generator.asteroids[i], this.playerobject);
+                this.intersect_collision(this.asteroids_generator.asteroids[i], this.playerobject);
             }
             if(this.asteroids_generator.asteroids[i].x < 0) {
                 this.asteroids_generator.asteroids[i].exists = false;

@@ -7,8 +7,8 @@ class Asteroid extends GameObject {
         this.noise = noise;
         this.segments = segments;  
         this.speed = speed;
-        this.height = this.radius / 2;
-        this.width = this.radius / 2;
+        this.height = this.radius;
+        this.width = this.radius;
         this.exists = false;
     }
     draw(ctx) {
@@ -20,10 +20,12 @@ class Asteroid extends GameObject {
     ctx.fillStyle = pattern;
     for(let i = 0; i < this.segments; i++) {
     ctx.rotate(2 * Math.PI / this.segments);
-    ctx.lineTo(this.radius + this.radius * this.noise * (Math.random() - 0.5), 0);
-    }
+    ctx.lineTo(this.radius + this.radius * this.noise *  (Math.random() - 0.5), 0);
+    //ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+}
     ctx.closePath();
-    ctx.fill();
+
+    //ctx.fill();
     ctx.stroke();
     ctx.restore();
     }
