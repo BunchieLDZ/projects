@@ -9,11 +9,14 @@ class Player extends GameObject {
         this.health = 100;
         this.image = new Image(this.width, this.height);   
         this.image.src = image;
+        this.image.crossOrigin = 'anonymous'; 
         this.is_immune = false;
+
+
     }
     draw(ctx) {
         ctx.save();
-
+        //ctx.fillStyle="red";
       /*   ctx.strokeStyle = "white";
         ctx.beginPath();
         ctx.ellipse(this.x, this.y, this.radiusX, this.radiusY, Math.PI / 2, 0, 2 * Math.PI);
@@ -22,8 +25,10 @@ class Player extends GameObject {
         ctx.beginPath();
         ctx.ellipse(this.x, this.y-20, this.radiusX + 20, this.radiusY - 35, Math.PI, 0, Math.PI);
         ctx.stroke(); */ // old version of UFO
+        //ctx.globalAlpha=0.62;
 
         ctx.drawImage(this.image, this.x - this.width /2 , this.y - this.height / 2 , this.width, this.height);
+        //ctx.fill();
 
       /*  ctx.beginPath();
         ctx.strokeStyle = "white";
@@ -35,7 +40,14 @@ class Player extends GameObject {
         ctx.strokeStyle="white";
         ctx.rect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
         ctx.stroke();
-
+        ctx.restore();
+    }
+    draw_health_bar(ctx) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.fillStyle = "green";
+        ctx.rect(ctx.canvas.width / 4, 40, this.health * 4, 30);
+        ctx.fill();
         ctx.restore();
     }
     update() {
@@ -54,7 +66,27 @@ class Player extends GameObject {
     collision_with_borders() {
 
     }
-    on_hit() {
+    on_hit(ctx) {
+        var imageData = ctx.getImageData(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+        var data = imageData.data;
+        if(this.is_immune == false){ 
+            console.log("ZMIENIAM KOLORKI!");
+            for(var i = 0; i < data.lenght; i+=4) {
+                data[i] = 255;
+            }
+        //ctx.putImageData(imageData, this.x - this.width / 2, this.y - this.height / 2); 
+        ctx.putImageData(imageData, 0, 0); 
+
         this.health = this.health - 10;
+        this.is_immune = true;
+        }
+    }
+    back_to_mortality() {
+        setInterval(this.make_immune_again.bind(this), 2000);
+    }
+    make_immune_again() {
+        if(this.is_immune == true) {
+        this.is_immune = false;
+        }
     }
 }

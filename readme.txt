@@ -1,0 +1,1 @@
+Run Chrome from command prompt using --allow-file-access-from-files argument.

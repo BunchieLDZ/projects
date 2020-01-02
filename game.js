@@ -6,6 +6,8 @@ class Game {
         this.ui_ctx = this.ui_canvas.getContext("2d");
         //this.canvas.focus();
         this.victory = false;
+        this.defeat = false;
+        this.score = 0;
         this.uiobjects = [];
         this.playerobject = new Player(this.game_canvas.width / 2, this.game_canvas.height / 2, 0, 0, 128, 64, "res/ufo.png", 120);
         this.scene = new Scene("res/background.jpg", 0, 0, 0, 0, 100, 800, 400);
@@ -21,6 +23,7 @@ class Game {
         this.initialize_UI();   
         this.initialize_asteroids() 
         this.initialize_game();
+        this.playerobject.back_to_mortality();
         //this.animation();
         this.update();
     }
@@ -31,27 +34,27 @@ class Game {
     }
     start_touch(evt) {
         evt.preventDefault();
-        console.log("touchstart");
+        //console.log("touchstart");
         var touches = evt.changedTouches;
-        console.log("Wielkosc tablicy touches: ", touches.length);
-        console.log(touches);
+        //console.log("Wielkosc tablicy touches: ", touches.length);
+        //console.log(touches);
 
         for (var i = 0; i < touches.length; i++) {
-            console.log("Jestem w petli touches");
-            console.log("Touch: ", touches[i]);
+           // console.log("Jestem w petli touches");
+           // console.log("Touch: ", touches[i]);
             this.ongoingTouches.push(touches[i]);
             var x = touches[i].clientX - evt.srcElement.offsetLeft;
             var y = touches[i].clientY - evt.srcElement.offsetTop;
-            console.log("x ", x, " y ", y);
+           // console.log("x ", x, " y ", y);
             if(this.vjoy.isTouchInCircle(x, y, this.vjoy.x, this.vjoy.y, this.vjoy.radius)) {
                 var distance =  Math.sqrt(Math.pow(x - this.vjoy.x,2) + Math.pow(y - this.vjoy.y, 2));
                 var coord_diffx = x - this.vjoy.x;
                 var coord_diffy = y - this.vjoy.y;
-                console.log(distance);
+                //console.log(distance);
                 this.playerobject.set_dx(coord_diffx);
                 this.playerobject.set_dy(coord_diffy);
-                console.log("Roznica koordynatynat: ", coord_diffx, coord_diffy);
-                console.log("Dx i Dy gracza:", this.playerobject.dx, this.playerobject.dy);
+               // console.log("Roznica koordynatynat: ", coord_diffx, coord_diffy);
+                //console.log("Dx i Dy gracza:", this.playerobject.dx, this.playerobject.dy);
             }
         }
     }
@@ -84,6 +87,20 @@ class Game {
             this.victory();
         }
     }
+    draw_defeat() {
+        console.log(this.game_ctx);
+        console.log("Jeste, w funkcju przegranej!");
+        this.game_ctx.font = "30px Arial";
+        this.game_ctx.fillStyle = "red";
+        this.game_ctx.fillText("You lose!", (this.game_canvas.width / 2) - 30, this.game_canvas.height / 2);   
+        //this.game_ctx.fillText("You lose!", 400, 200); 
+    }
+    evaluate_defeat() {
+        if(this.playerobject.health == 0) {
+            console.log("Jestem w warunku przegranej!")
+            this.defeat = true;
+        }
+    }
     prepare_asteroids() { // inicjalizacja N asteroid
         console.log("Asteroidy zainicjowane");
         console.log("Interal wywolywania asteroidy: ", this.asteroids_generator.generation_interval);
@@ -91,6 +108,8 @@ class Game {
     }
     initialize_game() {        
         setInterval(this.evaluate_victory, 3000);
+        setInterval(this.evaluate_defeat.bind(this), 2000);
+        setInterval(this.add_score.bind(this), 1000);
     }
     initialize_asteroids() {
         this.prepare_asteroids();
@@ -116,7 +135,7 @@ class Game {
         var distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance < object1.radius + object2.radius) {
-        this.on_player_hit();
+        this.on_player_hit(this.game_ctx);
         }
     }
     intersect_collision(circle, rect) {
@@ -126,15 +145,16 @@ class Game {
     if (circleDistancex > (rect.width/2 + circle.radius)) { return false; }
     if (circleDistancey > (rect.height/2 + circle.radius)) { return false; }
 
-    if (circleDistancex <= (rect.width/2)) { this.on_player_hit(); } 
-    if (circleDistancey <= (rect.height/2)) { this.on_player_hit();; }
+    if (circleDistancex <= (rect.width/2)) { this.playerobject.on_hit(this.game_ctx); } 
+    if (circleDistancey <= (rect.height/2)) { this.playerobject.on_hit(this.game_ctx); }
 
     var cornerDistance_sq = (circleDistancex - rect.width/2)^2 +
                          (circleDistancey - rect.height/2)^2;
 
     if((cornerDistance_sq <= (circle.r^2))) {
-        this.on_player_hit();
+        this.playerobject.on_hit(this.game_ctx);
         }
+    console.log(this.playerobject.health);
     }
     on_player_hit() {
         this.game_ctx.font = "30px Arial";
@@ -142,27 +162,25 @@ class Game {
         this.game_ctx.fillText("You lose!", (this.game_canvas.width / 2) - 30, this.game_canvas.height / 2);  
         console.log("PRZEGRANA");  
     }
-    check_collisions() {
-      /*  console.log("Liczba obiektow: ", this.asteroids_generator.asteroids.length);
-        for(var i = 0; i < this.asteroids_generator.asteroids.length; i++) {
-            for(var j = this.asteroids_generator.asteroids.length; j > 0; j--) {
-                if(this.asteroids_generator.asteroids[i].exists && this.asteroids_generator.asteroids[j].exists) {
-                if(this.calculate_distance(this.asteroids_generator.asteroids[i].x , this.asteroids_generator.asteroids[j].x, this.asteroids_generator.asteroids[i].y, this.asteroids_generator.asteroids[j].y) <= 10) {
-                    console.log("KOLIZJA!");
-                    this.asteroids_generator.asteroids[i].dx = -this.asteroids_generator.asteroids[i].dx;
-                    this.asteroids_generator.asteroids[i].dy = -this.asteroids_generator.asteroids[i].dy;
-                    this.asteroids_generator.asteroids[j].dx = -this.asteroids_generator.asteroids[j].dx;
-                    this.asteroids_generator.asteroids[j].dy = -this.asteroids_generator.asteroids[j].dy;
-                    }
-                }
-            }
-        }
-    } */
-}
+    draw_score() {
+        this.ui_ctx.font= "30px Arial";
+        this.ui_ctx.fillStyle = "black";
+        this.ui_ctx.fillText("SCORE", this.ui_canvas.width * 0.80, 30);
+        this.ui_ctx.fillText(this.score, this.ui_canvas.width * 0.85, 65);
+    }
+    add_score() {
+        console.log("Score: ", this);
+        this.score+=10;
+    }
     animation() {
-        this.check_collisions();
         this.game_ctx.clearRect(0, 0, this.game_canvas.width, this.game_canvas.height);
+        this.ui_ctx.clearRect(0, 0, this.ui_canvas.width, this.ui_canvas.height);
         this.scene.draw(this.game_ctx);
+        this.draw_score();
+        if(this.defeat == true) {
+            this.draw_defeat();
+            return;
+        }
         for(var i = 0; i < this.calculate_number_of_objects(this.gameobjects); i++) {
             this.gameobjects[i].draw(this.game_ctx);
             //console.log(gameobjects[i].width);
@@ -183,6 +201,7 @@ class Game {
             }
         }
         this.playerobject.draw(this.game_ctx);
+        this.playerobject.draw_health_bar(this.ui_ctx);
         //game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
         window.requestAnimationFrame(this.animation.bind(this));
     }
