@@ -11,8 +11,8 @@ class Player extends GameObject {
         this.image.src = image;
         this.image.crossOrigin = 'anonymous'; 
         this.is_immune = false;
-
-
+        this.canvas_width = document.getElementById("myCanvas").width;
+        this.canvas_height = document.getElementById("myCanvas").height;
     }
     draw(ctx) {
         ctx.save();
@@ -53,6 +53,19 @@ class Player extends GameObject {
     update() {
         this.x+=this.dx;
         this.y+=this.dy;
+        if(this.x > this.canvas_width)
+        {
+            this.x = 0;
+        }
+        else if(this.x < 0) {
+            this.x = this.canvas_width;
+        }
+        else if(this.y > this.canvas_height) {
+            this.y = 0;
+        }
+        else if(this.y < 0) {
+            this.y = this.canvas_height;
+        }
         //console.log("Obecne wspolrzedne: ", this.x, this.y);
     
         setTimeout(this.update.bind(this),this.timeout);
@@ -62,9 +75,6 @@ class Player extends GameObject {
     }
     set_dy(number) {
         this.dy = number;
-    }
-    collision_with_borders() {
-
     }
     on_hit(ctx) {
         var imageData = ctx.getImageData(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);

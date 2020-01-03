@@ -228,7 +228,8 @@ class Game {
         /*for(var i = 0; i < asteroids_generator.calculate_number_of_asteroids(); i++) {
             asteroids_generator.asteroids[i].update();
         }*/
-        this.playerobject.update();
+        console.log("UPDATE", this);
+        this.playerobject.update(this.game_canvas.width);
     }
 }
 
