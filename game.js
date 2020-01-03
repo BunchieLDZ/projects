@@ -34,36 +34,47 @@ class Game {
     }
     start_touch(evt) {
         evt.preventDefault();
-        //console.log("touchstart");
+        console.log("Touch event: ", this);
         var touches = evt.changedTouches;
-        //console.log("Wielkosc tablicy touches: ", touches.length);
-        //console.log(touches);
 
         for (var i = 0; i < touches.length; i++) {
-           // console.log("Jestem w petli touches");
-           // console.log("Touch: ", touches[i]);
             this.ongoingTouches.push(touches[i]);
             var x = touches[i].clientX - evt.srcElement.offsetLeft;
             var y = touches[i].clientY - evt.srcElement.offsetTop;
-           // console.log("x ", x, " y ", y);
             if(this.vjoy.isTouchInCircle(x, y, this.vjoy.x, this.vjoy.y, this.vjoy.radius)) {
-                var distance =  Math.sqrt(Math.pow(x - this.vjoy.x,2) + Math.pow(y - this.vjoy.y, 2));
                 var coord_diffx = x - this.vjoy.x;
                 var coord_diffy = y - this.vjoy.y;
-                //console.log(distance);
                 this.playerobject.set_dx(coord_diffx);
                 this.playerobject.set_dy(coord_diffy);
-               // console.log("Roznica koordynatynat: ", coord_diffx, coord_diffy);
-                //console.log("Dx i Dy gracza:", this.playerobject.dx, this.playerobject.dy);
+            }
+        }
+    }
+    move_touch(evt) {
+        evt.preventDefault();
+        console.log("Touch event: ", this);
+        var touches = evt.changedTouches;
+
+        for (var i = 0; i < touches.length; i++) {
+            this.ongoingTouches.push(touches[i]);
+            var x = touches[i].clientX - evt.srcElement.offsetLeft;
+            var y = touches[i].clientY - evt.srcElement.offsetTop;
+            if(this.vjoy.isTouchInCircle(x, y, this.vjoy.x, this.vjoy.y, this.vjoy.radius)) {
+                var coord_diffx = x - this.vjoy.x;
+                var coord_diffy = y - this.vjoy.y;
+                this.playerobject.set_dx(coord_diffx);
+                this.playerobject.set_dy(coord_diffy);
             }
         }
     }
     initialize_touch() {
+        console.log("Inicjaliacja touch", this);
+        console.log("VJOY", this.vjoy);
+       // console.log("START W GRZE", this.start_touch(evt));
         //this.canvas.addEventListener("touchstart", this.vjoy.start.bind(this), false);
         this.ui_canvas.addEventListener("touchend", this.start_touch.bind(this), false);
         this.ui_canvas.addEventListener("touchend", this.end_touch, false);
         this.ui_canvas.addEventListener("touchcancel", this.cancel_touch, false);
-        this.ui_canvas.addEventListener("touchmove", this.move_touch, false);
+        this.ui_canvas.addEventListener("touchmove", this.move_touch.bind(this), false);
     }
     calculate_number_of_objects(gameobjects) {
         return gameobjects.length;
@@ -92,7 +103,10 @@ class Game {
         console.log("Jeste, w funkcju przegranej!");
         this.game_ctx.font = "30px Arial";
         this.game_ctx.fillStyle = "red";
-        this.game_ctx.fillText("You lose!", (this.game_canvas.width / 2) - 30, this.game_canvas.height / 2);   
+        this.game_ctx.fillText("You lose!", (this.game_canvas.width / 2) - 30, this.game_canvas.height / 2);  
+        this.game_ctx.fillStyle = "white"; 
+        this.game_ctx.fillText("Your score: ", (this.game_canvas.width / 2) - 60, this.game_canvas.height / 2 + 40);
+        this.game_ctx.fillText(this.score, (this.game_canvas.width / 2) + 95, this.game_canvas.height / 2 + 40);
         //this.game_ctx.fillText("You lose!", 400, 200); 
     }
     evaluate_defeat() {

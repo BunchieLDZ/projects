@@ -42,10 +42,10 @@ class VJoy {
     }
     initialize() {
         console.log(this.canvas);   
-        this.canvas.addEventListener("touchstart", this.start(), false);
-        this.canvas.addEventListener("touchend", this.end(), false);
-        this.canvas.addEventListener("touchcancel", this.cancel(), false);
-        this.canvas.addEventListener("touchmove", this.move(), false);
+        this.canvas.addEventListener("touchstart", this.start().bind(this), false);
+        this.canvas.addEventListener("touchend", this.end().bind(this), false);
+        this.canvas.addEventListener("touchcancel", this.cancel().bind(this), false);
+        this.canvas.addEventListener("touchmove", this.move().bind(this), false);
     }
     isTouchInCircle(mx,my,shape_x, shape_y, shape_radius) {
         if(shape_radius){
