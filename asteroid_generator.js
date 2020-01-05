@@ -96,10 +96,10 @@ class AsteroidGenerator {
     release_asteroid() {
         var number_of_asteroids = this.calculate_number_of_asteroids();
         var rand = parseInt(Math.random() * number_of_asteroids);
-        console.log("Wylosowana liczba: ", rand);
-        console.log("Rozmiar tablicy", this.calculate_number_of_asteroids());
+        //console.log("Wylosowana liczba: ", rand);
+       // console.log("Rozmiar tablicy", this.calculate_number_of_asteroids());
         this.asteroids[rand].exists = true;
-        console.log("DY asteroidy: ", this.asteroids[rand].dy);
+        //console.log("DY asteroidy: ", this.asteroids[rand].dy);
         this.asteroids[rand].update();
         //this.asteroids.splice(rand, 1);
         this.asteroids_released++;

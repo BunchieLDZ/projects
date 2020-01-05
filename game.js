@@ -4,12 +4,16 @@ class Game {
         this.ui_canvas = document.getElementById("uiCanvas");
         this.game_ctx = this.game_canvas.getContext("2d");
         this.ui_ctx = this.ui_canvas.getContext("2d");
+        this.icanvas = document.createElement("canvas");
+        this.icanvas.width = this.game_canvas.width;
+        this.icanvas.height = this.game_canvas.height;
+        this.ictx = this.icanvas.getContext("2d");
         //this.canvas.focus();
         this.victory = false;
         this.defeat = false;
         this.score = 0;
         this.uiobjects = [];
-        this.playerobject = new Player(this.game_canvas.width / 2, this.game_canvas.height / 2, 0, 0, 128, 64, "res/ufo.png", 120);
+        this.playerobject = new Player(this.game_canvas.width / 2, this.game_canvas.height / 2, 0, 0, 1,  128, 64, "res/ufo.png", 120);
         this.scene = new Scene("res/background.jpg", 0, 0, 0, 0, 100, 800, 400);
         this.asteroids_generator = new AsteroidGenerator(500, 1200, 33, -10, this.game_canvas.height, this.game_canvas.width);
         console.log("Generator: ", this.asteroids_generator);
@@ -51,7 +55,7 @@ class Game {
     }
     move_touch(evt) {
         evt.preventDefault();
-        console.log("Touch event: ", this);
+       // console.log("Touch event: ", this);
         var touches = evt.changedTouches;
 
         for (var i = 0; i < touches.length; i++) {
@@ -67,8 +71,6 @@ class Game {
         }
     }
     initialize_touch() {
-        console.log("Inicjaliacja touch", this);
-        console.log("VJOY", this.vjoy);
        // console.log("START W GRZE", this.start_touch(evt));
         //this.canvas.addEventListener("touchstart", this.vjoy.start.bind(this), false);
         this.ui_canvas.addEventListener("touchend", this.start_touch.bind(this), false);
@@ -80,27 +82,21 @@ class Game {
         return gameobjects.length;
     }
     fire_asteroid() {
-        console.log("Moj generator asteroid: ", this.asteroids_generator);
         this.asteroids_generator.release_asteroid();
     }
     victory() {
-        console.log("Zwyciestwo!");
         this.game_ctx.font = "30px Comic Sans MS";
         this.game_ctx.fillStyle = "red";
         this.game_ctx.textAlign = "center";
         this.game_ctx.fillText("Przetrwales!", this.game_canvas.width/2, this.game_canvas.height/2);
     }
     evaluate_victory() {
-        console.log("Sprawdzam warunek zwyciestwa");
-        console.log("Liczba asteroid: ", this.asteroids_generator.calculate_number_of_asteroids())
-        if((this.asteroids_generator.calculate_number_of_asteroids()) == this.asteroids_generator.asteroids_released)
+        if((this.asteroids_generator.calculate_number_of_asteroids().bind(this)) == this.asteroids_generator.asteroids_released)
         {
             this.victory();
         }
     }
     draw_defeat() {
-        console.log(this.game_ctx);
-        console.log("Jeste, w funkcju przegranej!");
         this.game_ctx.font = "30px Arial";
         this.game_ctx.fillStyle = "red";
         this.game_ctx.fillText("You lose!", (this.game_canvas.width / 2) - 30, this.game_canvas.height / 2);  
@@ -132,6 +128,47 @@ class Game {
     distance_between(obj1, obj2) {
         return Math.sqrt(Math.pow(obj1.x - obj2.x, 2) +Math.pow(obj1.y - obj2.y, 2));
     }
+    overlapping_area(obj1, obj2) { // obliczenie obszaru wspolnego nachodzacych na siebie boxow w kolizji
+        var coordinates = [];
+        var clx;
+        var cbx;
+        var cly;
+        var cby;
+
+        if(obj1.bbx1 < obj2.bbx1) {
+            clx = obj2.bbx1;
+        }
+        if(obj1.bbx1 > obj2.x) {
+            clx = obj1.bbx1;
+        }
+        if(obj1.bby1 < obj2.bby1) {
+            cly = obj2.bby1;
+        }
+        if(obj1.bby1 > obj2.bby1) {
+            cly = obj1.bby1;
+        }
+        if(obj1.bbx2 < obj2.bbx2) {
+            cbx = obj1.bbx2;
+        }
+        if(obj1.bbx2 > obj2.bbx2) {
+            cbx = obj2.bbx2;
+        }
+        if(obj1.bby2 < obj2.bby2) {
+            cby = obj1.bby2;
+        }
+        if(obj1.bby2 > obj2.bby2) {
+            cby = obj2.bby2;
+        }
+    
+        coordinates[0] = clx;
+        coordinates[1] = cly;
+        coordinates[2] = cbx;
+        coordinates[3] = cby;
+    
+        console.log("WSPOLRZEDNE OBSZARU WSPOLNEGO: ", clx, cly, cbx, cby);
+    
+        return coordinates;    
+    }
     box_collision(object1, object2) {
         if (object1.x < object2.x + object2.width &&
             object1.x + object1.width > object2.x &&
@@ -159,17 +196,52 @@ class Game {
     if (circleDistancex > (rect.width/2 + circle.radius)) { return false; }
     if (circleDistancey > (rect.height/2 + circle.radius)) { return false; }
 
-    if (circleDistancex <= (rect.width/2)) { this.playerobject.on_hit(this.game_ctx); } 
-    if (circleDistancey <= (rect.height/2)) { this.playerobject.on_hit(this.game_ctx); }
+    if (circleDistancex <= (rect.width/2)) { return true } 
+    if (circleDistancey <= (rect.height/2)) { return true }
 
     var cornerDistance_sq = (circleDistancex - rect.width/2)^2 +
                          (circleDistancey - rect.height/2)^2;
 
     if((cornerDistance_sq <= (circle.r^2))) {
-        this.playerobject.on_hit(this.game_ctx);
+        return true;
         }
-    console.log(this.playerobject.health);
+    //console.log(this.playerobject.health);
     }
+    pixel_collision(obj1, obj2) { // dokladniejsza kolizja per pixel
+    // wyznaczamy 4 koordynaty dwoch punktow ktore stanowia krance nachodzacego prostokata
+    var clx = this.overlapping_area(obj1, obj2)[0]; 
+    var cly = this.overlapping_area(obj1, obj2)[1];
+    var cbx = this.overlapping_area(obj1, obj2)[2];
+    var cby = this.overlapping_area(obj1, obj2)[3];
+    console.log(clx, cly, cbx, cby);
+    console.log(this.ictx);
+    // jesli szerokosc i wysokosc tego prostokata jest wieksza/rowna 1
+    if((cbx-clx) >= 1 && (cby - cly) >= 1) {
+    this.ictx.clearRect(clx, cly, cbx - clx, cby - cly); // czyszczenie tymczasowej kanwy
+    obj1.draw(this.ictx); // rysowanie pierwszego obiektu
+    var imgdata1 = this.ictx.getImageData(clx, cly, cbx - clx, cby - cly); // wyciagniecie imgdata tego obiektu
+    this.ictx.clearRect(clx, cly, cbx - clx, cby - cly); // to samo dla drugiego obiektu
+    obj2.draw(this.ictx);
+    var imgdata2 = this.ictx.getImageData(clx, cly, cbx - clx, cby - cly);
+
+    console.log(imgdata1);
+
+    for(var i = 3; i < imgdata1.data.length; i+=4) // sprawdzanie kanalu alpha obiektow
+        {
+        if(!imgdata1.data[i] && !imgdata2.data[i]) // jesli pixele sa przezroczyste to sprawdzamy dalej
+            {
+           continue;
+            }
+        else { // jesli nie jest to mamy do czynienia z kolizja
+            console.log("KOLIZJA!");
+            //this.playerobject.on_hit()
+            /*context.fillStyle = "black";
+            context.font = "30px Arial";
+            context.fillText("Kolizja!", 300, 50);*/
+                }
+            }
+        }
+    }   
     on_player_hit() {
         this.game_ctx.font = "30px Arial";
         this.game_ctx.fillStyle = "white";
@@ -183,7 +255,6 @@ class Game {
         this.ui_ctx.fillText(this.score, this.ui_canvas.width * 0.85, 65);
     }
     add_score() {
-        console.log("Score: ", this);
         this.score+=10;
     }
     animation() {
@@ -207,7 +278,9 @@ class Game {
             if(this.asteroids_generator.asteroids[i].exists == true){
                 this.asteroids_generator.asteroids[i].draw(this.game_ctx);
                 //this.box_collision(this.asteroids_generator.asteroids[i], this.playerobject);
-                this.intersect_collision(this.asteroids_generator.asteroids[i], this.playerobject);
+                if(this.intersect_collision(this.asteroids_generator.asteroids[i], this.playerobject)){
+                    this.pixel_collision(this.asteroids_generator.asteroids[i], this.playerobject);
+                }
             }
             if(this.asteroids_generator.asteroids[i].x < 0) {
                 this.asteroids_generator.asteroids[i].exists = false;
