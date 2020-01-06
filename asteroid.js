@@ -36,20 +36,20 @@ class Asteroid extends GameObject {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, 2 * Math. PI);
     ctx.stroke();
-   ctx.beginPath();
+  /* ctx.beginPath();
     ctx.strokeStyle = "white"; 
     ctx.rect(this.bbx1, this.bby1, this.radius * 2, this.radius * 2);
-    ctx.stroke();
+    ctx.stroke(); */
     }
 
     update() {
         //console.log("Wywoluje funkcje update asteroidy!");
         this.x+=this.dx * this.speed;
         this.y+=this.dy * this.speed;
-        this.bbx1+=this.dx * this.speed;
-        this.bbx2+=this.dx * this.speed;
-        this.bby1+=this.dy * this.speed;
-        this.bby2+=this.dy * this.speed;
+        this.bbx1 = this.x - this.radius;
+        this.bby1 = this.y - this.radius;
+        this.bbx2 = this.bbx1 + this.width;
+        this.bby2 = this.bby1 + this.height;
         setTimeout(this.update.bind(this),this.timeout);
     }
 }

@@ -13,7 +13,7 @@ class Game {
         this.defeat = false;
         this.score = 0;
         this.uiobjects = [];
-        this.playerobject = new Player(this.game_canvas.width / 2, this.game_canvas.height / 2, 0, 0, 1,  128, 64, "res/ufo.png", 120);
+        this.playerobject = new Player(this.game_canvas.width / 2, this.game_canvas.height / 2, 0, 0, 0.5,  128, 64, "res/ufo.png", 120);
         this.scene = new Scene("res/background.jpg", 0, 0, 0, 0, 100, 800, 400);
         this.asteroids_generator = new AsteroidGenerator(500, 1200, 33, -10, this.game_canvas.height, this.game_canvas.width);
         console.log("Generator: ", this.asteroids_generator);
@@ -134,29 +134,28 @@ class Game {
         var cbx;
         var cly;
         var cby;
-
         if(obj1.bbx1 < obj2.bbx1) {
             clx = obj2.bbx1;
         }
-        if(obj1.bbx1 > obj2.x) {
+        else {
             clx = obj1.bbx1;
         }
         if(obj1.bby1 < obj2.bby1) {
             cly = obj2.bby1;
         }
-        if(obj1.bby1 > obj2.bby1) {
+        else {
             cly = obj1.bby1;
         }
         if(obj1.bbx2 < obj2.bbx2) {
             cbx = obj1.bbx2;
         }
-        if(obj1.bbx2 > obj2.bbx2) {
+        else {
             cbx = obj2.bbx2;
         }
         if(obj1.bby2 < obj2.bby2) {
             cby = obj1.bby2;
         }
-        if(obj1.bby2 > obj2.bby2) {
+        else {
             cby = obj2.bby2;
         }
     
@@ -167,19 +166,13 @@ class Game {
     
         console.log("WSPOLRZEDNE OBSZARU WSPOLNEGO: ", clx, cly, cbx, cby);
     
-        return coordinates;    
+        return coordinates;
+    
     }
-    box_collision(object1, object2) {
-        if (object1.x < object2.x + object2.width &&
-            object1.x + object1.width > object2.x &&
-            object1.y < object2.y + object2.height &&
-            object1.y + object1.height > object2.y) {
-            console.log("Pozycja asteroidy: ", object1.x, object1.y, "Pozycja gracza: ", object2.x, object2.y);
-            console.log("Szerokosc i wysokosc statku: ", object2.width, object2.height);
-            console.log("Szerokosc i wysokosc asteroidy: ", object1.width, object1.height)
-             this.on_player_hit();
-            }
-    }  
+    box_collision(obj1, obj2) { // kolizja typu box - malo dokladna ale szybka w obliczeniach
+        console.log("Sprawdzam kolizje!");
+        return !(obj1.bbx2 < obj2.bbx1 || obj2.bbx2 < obj1.bbx1 || obj1.bby2 < obj2.bby1 || obj2.bby2 < obj1.bby1);
+    }
     circle_collision(object1, object2) {
         var dx = object1.x - object2.x;
         var dy = object1.y - object2.y;
@@ -234,7 +227,7 @@ class Game {
             }
         else { // jesli nie jest to mamy do czynienia z kolizja
             console.log("KOLIZJA!");
-            //this.playerobject.on_hit()
+            this.playerobject.on_hit()
             /*context.fillStyle = "black";
             context.font = "30px Arial";
             context.fillText("Kolizja!", 300, 50);*/
@@ -278,8 +271,8 @@ class Game {
             if(this.asteroids_generator.asteroids[i].exists == true){
                 this.asteroids_generator.asteroids[i].draw(this.game_ctx);
                 //this.box_collision(this.asteroids_generator.asteroids[i], this.playerobject);
-                if(this.intersect_collision(this.asteroids_generator.asteroids[i], this.playerobject)){
-                    this.pixel_collision(this.asteroids_generator.asteroids[i], this.playerobject);
+                if(this.box_collision(this.playerobject, this.asteroids_generator.asteroids[i]) && this.playerobject.is_immune == false){
+                    this.pixel_collision(this.playerobject, this.asteroids_generator.asteroids[i]);
                 }
             }
             if(this.asteroids_generator.asteroids[i].x < 0) {
